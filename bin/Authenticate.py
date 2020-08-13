@@ -24,9 +24,23 @@ class Authenticate():
             if(prompt_f.read(5)=="Hello"):
                 success=QtWidgets.QMessageBox();
                 success.setWindowTitle("Welcome");
-                success.setText(prompt_f.readline().rstrip("\n"));
+                name=prompt_f.readline().rstrip("\n");
+                success.setText(name);
                 success.exec_();
-                self.obj_QMainWindow__validate.close();
+                self.obj_AuthenticateGui.btn_verify.setEnabled(False);
+                self.obj_AuthenticateGui.authkey.setEnabled(False);
+                self.obj_AuthenticateGui.name.setText("Name: "+name);
+                self.obj_AuthenticateGui.name.adjustSize();
+                os.system("sudo odrive status 2>&1 |tee /home/ubuntu/.odrive-x/status.txt");
+                with open("/home/ubuntu/.odrive-x/status.txt") as file:
+                    text=file.readlines();
+                    info=str(text[3].split("\n")).split(" ");
+                    email=info[1];
+                    accountType=info[-2].rstrip("',");
+                    self.obj_AuthenticateGui.email.setText("Email: "+email);
+                    self.obj_AuthenticateGui.email.adjustSize();
+                    self.obj_AuthenticateGui.ac.setText("Account Type: "+accountType);
+                    self.obj_AuthenticateGui.ac.adjustSize();
             else:
                 prompt_f.seek(0);
                 error=QtWidgets.QMessageBox();
