@@ -22,8 +22,14 @@
     <height>600</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>Ubuntu</family>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>Remote Path</string>
+   <string>odrive-x</string>
   </property>
   <property name="windowIcon">
    <iconset>

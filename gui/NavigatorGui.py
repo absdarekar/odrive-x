@@ -18,6 +18,10 @@ class NavigatorGui(object):
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QtCore.QSize(800, 600))
         MainWindow.setMaximumSize(QtCore.QSize(800, 600))
+        font = QtGui.QFont()
+        font.setFamily("Ubuntu")
+        font.setPointSize(12)
+        MainWindow.setFont(font)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("/home/ubuntu/odrive-x/icon/odrive.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -39,7 +43,7 @@ class NavigatorGui(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Remote Path"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "odrive-x"))
         self.pushButton.setText(_translate("MainWindow", "Select"))
 
 
