@@ -32,8 +32,8 @@ class Authenticate():
                 self.obj_AuthenticateGui.name.setText("Name: "+name);
                 self.obj_AuthenticateGui.name.adjustSize();
                 os.system("sudo odrive status 2>&1 |tee /home/ubuntu/.odrive-x/status.txt");
-                with open("/home/ubuntu/.odrive-x/status.txt") as file:
-                    text=file.readlines();
+                with open("/home/ubuntu/.odrive-x/status.txt") as status_f:
+                    text=status_f.readlines();
                     info=str(text[3].split("\n")).split(" ");
                     email=info[1];
                     accountType=info[-2].rstrip("',");
