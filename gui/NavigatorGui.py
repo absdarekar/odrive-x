@@ -36,6 +36,9 @@ class NavigatorGui(object):
         self.pushButton.setMaximumSize(QtCore.QSize(50, 50))
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout.addWidget(self.pushButton)
+        self.statusBar = QtWidgets.QStatusBar(MainWindow)
+        self.statusBar.setObjectName("statusBar")
+        MainWindow.setStatusBar(self.statusBar)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

@@ -4,6 +4,7 @@ import sys;
 import os;
 sys.path.insert(1, "/home/ubuntu/odrive-x")
 from gui.MountGui import MountGui;
+from bin.Navigator import Navigator;
 class Mount():
     def centering(self,arg_window):
         window=arg_window.frameGeometry();
@@ -24,7 +25,9 @@ class Mount():
         self.local_dir=QFileDialog.getExistingDirectory(None, 'Select a directory',"/home");
         self.obj_MountGui.local_path.setText(self.local_dir);
     def cloud(self):
-        pass;
+        self.obj_Navigator=Navigator();
+        self.remote_dir="/"; #temperory
+        self.obj_MountGui.remote_path.setText(self.remote_dir);
     def mount(self):
         os.system("sudo odrive mount "+self.local_dir+" "+self.remote_dir+" 2>&1 |tee /home/ubuntu/.odrive-x/mount.txt");
         with open("/home/ubuntu/.odrive-x/mount.txt") as mount_f:
