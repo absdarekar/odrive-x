@@ -12,11 +12,11 @@ class Mount():
         window.moveCenter(center);
         arg_window.move(window.topLeft());
     def ui(self):
-        self.obj_QMainWindow__mount=QtWidgets.QMainWindow();
-        self.centering(self.obj_QMainWindow__mount);
+        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
+        self.centering(self.obj_QMainWindow__ui);
         self.obj_MountGui=MountGui();
-        self.obj_MountGui.setupUi(self.obj_QMainWindow__mount);
-        self.obj_QMainWindow__mount.show();
+        self.obj_MountGui.setupUi(self.obj_QMainWindow__ui);
+        self.obj_QMainWindow__ui.show();
         self.obj_MountGui.btn_local.clicked.connect(self.local);
         self.obj_MountGui.btn_cloud.clicked.connect(self.navigate);
         self.obj_MountGui.btn_mount.clicked.connect(self.mount);
