@@ -30,9 +30,20 @@ class Mount():
         self.obj_NavigatorGui.web.loadFinished.connect(self.statusDone);
         self.obj_NavigatorGui.pushButton.clicked.connect(self.extract);
     def extract(self):
-        self.remote_dir=str(self.obj_NavigatorGui.web.url());
-        self.obj_MountGui.remote_path.setText(self.remote_dir);
-        self.obj_QMainWindow__navigate.close();
+        url=str(self.obj_NavigatorGui.web.url());
+        url=(url.replace(url[:19],"")).rstrip("')")
+        valPath="";
+        for i in range(30):
+            valPath=valPath+(url[i]);
+        if(valPath!="https://www.odrive.com/browse/"):
+            error=QtWidgets.QMessageBox();
+            error.setWindowTitle("Error");
+            error.setText("Invalid path");
+            error.exec_();
+        else:
+            self.remote_dir=(url.replace(valPath,"")).replace("+","\ ");
+            self.obj_MountGui.remote_path.setText(self.remote_dir);
+            self.obj_QMainWindow__navigate.close();
     def statusLoading(self):
         self.obj_NavigatorGui.statusBar.showMessage("Loading...");
     def statusDone(self):

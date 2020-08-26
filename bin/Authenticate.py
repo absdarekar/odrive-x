@@ -9,12 +9,12 @@ class Authenticate():
         center=QtWidgets.QDesktopWidget().availableGeometry().center();
         window.moveCenter(center);
         arg_window.move(window.topLeft());
-    def validate(self):
-        self.obj_QMainWindow__validate=QtWidgets.QMainWindow();
-        self.centering(self.obj_QMainWindow__validate);
+    def ui(self):
+        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
+        self.centering(self.obj_QMainWindow__ui);
         self.obj_AuthenticateGui=AuthenticateGui();
-        self.obj_AuthenticateGui.setupUi(self.obj_QMainWindow__validate);
-        self.obj_QMainWindow__validate.show();
+        self.obj_AuthenticateGui.setupUi(self.obj_QMainWindow__ui);
+        self.obj_QMainWindow__ui.show();
         self.obj_AuthenticateGui.btn_verify.clicked.connect(self.authenticate);
     def authenticate(self):
         authkey=self.obj_AuthenticateGui.authkey.text();
@@ -50,5 +50,5 @@ class Authenticate():
 if __name__ == "__main__":
     obj_QApplication=QtWidgets.QApplication(sys.argv)
     obj_Authenticate=Authenticate();
-    obj_Authenticate.validate();
+    obj_Authenticate.ui();
     sys.exit(obj_QApplication.exec_())
