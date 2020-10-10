@@ -2,30 +2,27 @@ from PyQt5 import QtCore, QtGui, QtWidgets;
 from PyQt5.QtWidgets import QFileDialog;
 import sys;
 import os;
-sys.path.insert(1, "/home/ubuntu/odrive-x")
+import socket;
+import json;
+sys.path.insert(1,os.path.join(os.path.expanduser('~'),'odrive-x'));
 from gui.MountGui import MountGui;
 from gui.NavigatorGui import NavigatorGui;
+from gui.Gui import Gui;
+from Odrivex import Odrivex;
 class Mount():
-    def centering(self,arg_window):
-        window=arg_window.frameGeometry();
-        center=QtWidgets.QDesktopWidget().availableGeometry().center();
-        window.moveCenter(center);
-        arg_window.move(window.topLeft());
     def ui(self):
-        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
-        self.centering(self.obj_QMainWindow__ui);
         self.obj_MountGui=MountGui();
-        self.obj_MountGui.setupUi(self.obj_QMainWindow__ui);
-        self.obj_QMainWindow__ui.show();
-        self.obj_MountGui.btn_local.clicked.connect(self.local);
-        self.obj_MountGui.btn_cloud.clicked.connect(self.navigate);
-        self.obj_MountGui.btn_mount.clicked.connect(self.mount);
-    def navigate(self):
-        self.obj_QMainWindow__navigate=QtWidgets.QMainWindow();
-        self.centering(self.obj_QMainWindow__navigate);
         self.obj_NavigatorGui=NavigatorGui();
+        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
+        self.obj_MountGui.setupUi(self.obj_QMainWindow__ui);
+        Gui.centering(self.obj_QMainWindow__ui);
+        self.obj_QMainWindow__ui.show();
+        self.obj_QMainWindow__navigate=QtWidgets.QMainWindow();
         self.obj_NavigatorGui.setupUi(self.obj_QMainWindow__navigate);
-        self.obj_QMainWindow__navigate.show();
+        Gui.centering(self.obj_QMainWindow__navigate);
+        self.obj_MountGui.btn_local.clicked.connect(self.local);
+        self.obj_MountGui.btn_cloud.clicked.connect(self.obj_QMainWindow__navigate.show);
+        self.obj_MountGui.btn_mount.clicked.connect(self.mount);
         self.obj_NavigatorGui.web.loadProgress.connect(self.statusLoading);
         self.obj_NavigatorGui.web.loadFinished.connect(self.statusDone);
         self.obj_NavigatorGui.pushButton.clicked.connect(self.extract);
@@ -49,16 +46,28 @@ class Mount():
     def statusDone(self):
         self.obj_NavigatorGui.statusBar.showMessage("Done",1000);
     def local(self):
+        self.remote_dir="/"
         self.local_dir=QFileDialog.getExistingDirectory(None, 'Select a directory',"/home");
         self.obj_MountGui.local_path.setText(self.local_dir);
     def mount(self):
-        os.system("sudo odrive mount "+self.local_dir+" "+self.remote_dir+" 2>&1 |tee /home/ubuntu/.odrive-x/mount.txt");
-        with open("/home/ubuntu/.odrive-x/mount.txt") as mount_f:
-            info=QtWidgets.QMessageBox();
-            info.setWindowTitle("odrive-x");
-            alert=mount_f.readline().rstrip("\n");
-            info.setText(alert);
-            info.exec_();
+        socket_odriveagent=Odrivex.tether();
+        socket_odriveagent.sendall((json.dumps({'command':'mount','parameters':{'localPath':self.local_dir,'remotePath':self.remote_dir}})+'\n').encode('utf-8'));
+        response_odriveagent=Odrivex.receive(socket_odriveagent);
+        socket_odriveagent.close();
+        if (response_odriveagent['messageType']=='Status'):
+            success=QtWidgets.QMessageBox();
+            success.setWindowTitle("Alert");
+            success.setText(response_odriveagent['message']);
+            success.exec_();
+            mount={"localPath":self.local_dir,"remotePath":self.remote_dir};
+            with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'/'+'mount','w') as mount_f:
+                json.dump(mount,mount_f,indent=None);
+            self.obj_QMainWindow__ui.close();
+        if (response_odriveagent['messageType']=='Error'):
+            error=QtWidgets.QMessageBox();
+            error.setWindowTitle("Error");
+            error.setText(response_odriveagent['message']);
+            error.exec_();
 if __name__ == "__main__":
     obj_QApplication=QtWidgets.QApplication(sys.argv)
     obj_Mount=Mount();

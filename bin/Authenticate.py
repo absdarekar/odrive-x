@@ -43,7 +43,8 @@ class Authenticate():
             self.obj_AuthenticateGui.ac.setText("Account Type: "+accountType);
             self.obj_AuthenticateGui.ac.adjustSize();
             user_info={"name":name,"email":email,"accountType":accountType};
-            with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'_user_info.json','w') as user_info_f:
+            os.makedirs(os.path.join(os.path.expanduser('~'),'.odrive-x'), exist_ok=True);
+            with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'/'+'user_info','w') as user_info_f:
                 json.dump(user_info,user_info_f,indent=None);
         if (response_odriveagent['messageType']=='Error'):
             error=QtWidgets.QMessageBox();
