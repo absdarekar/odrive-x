@@ -10,13 +10,13 @@ from gui.NavigatorGui import NavigatorGui;
 from gui.Gui import Gui;
 from Odrivex import Odrivex;
 class Mount():
-    def ui(self):
+    def setupUi(self):
         self.obj_MountGui=MountGui();
         self.obj_NavigatorGui=NavigatorGui();
-        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
-        self.obj_MountGui.setupUi(self.obj_QMainWindow__ui);
-        Gui.centering(self.obj_QMainWindow__ui);
-        self.obj_QMainWindow__ui.show();
+        self.obj_QMainWindow__setupUi=QtWidgets.QMainWindow();
+        self.obj_MountGui.setupUi(self.obj_QMainWindow__setupUi);
+        Gui.centering(self.obj_QMainWindow__setupUi);
+        self.obj_QMainWindow__setupUi.show();
         self.obj_QMainWindow__navigate=QtWidgets.QMainWindow();
         self.obj_NavigatorGui.setupUi(self.obj_QMainWindow__navigate);
         Gui.centering(self.obj_QMainWindow__navigate);
@@ -62,7 +62,7 @@ class Mount():
             mount={"localPath":self.local_dir,"remotePath":self.remote_dir};
             with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'/'+'mount','w') as mount_f:
                 json.dump(mount,mount_f,indent=None);
-            self.obj_QMainWindow__ui.close();
+            self.obj_QMainWindow__setupUi.close();
         if (response_odriveagent['messageType']=='Error'):
             error=QtWidgets.QMessageBox();
             error.setWindowTitle("Error");
@@ -71,5 +71,5 @@ class Mount():
 if __name__ == "__main__":
     obj_QApplication=QtWidgets.QApplication(sys.argv)
     obj_Mount=Mount();
-    obj_Mount.ui();
+    obj_Mount.setupUi();
     sys.exit(obj_QApplication.exec_())

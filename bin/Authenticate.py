@@ -8,12 +8,12 @@ from gui.Gui import Gui;
 from gui.AuthenticateGui import AuthenticateGui;
 from Odrivex import Odrivex;
 class Authenticate():
-    def ui(self):
-        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
-        Gui.centering(self.obj_QMainWindow__ui);
+    def setupUi(self):
+        self.obj_QMainWindow__setupUi=QtWidgets.QMainWindow();
+        Gui.centering(self.obj_QMainWindow__setupUi);
         self.obj_AuthenticateGui=AuthenticateGui();
-        self.obj_AuthenticateGui.setupUi(self.obj_QMainWindow__ui);
-        self.obj_QMainWindow__ui.show();
+        self.obj_AuthenticateGui.setupUi(self.obj_QMainWindow__setupUi);
+        self.obj_QMainWindow__setupUi.show();
         self.obj_AuthenticateGui.btn_authenticate.clicked.connect(self.authenticate);
     def authenticate(self):
         authkey=self.obj_AuthenticateGui.authkey.text();
@@ -54,5 +54,5 @@ class Authenticate():
 if __name__=="__main__":
     obj_QApplication=QtWidgets.QApplication(sys.argv)
     obj_Authenticate=Authenticate();
-    obj_Authenticate.ui();
+    obj_Authenticate.setupUi();
     sys.exit(obj_QApplication.exec_())

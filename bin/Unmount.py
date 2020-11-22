@@ -1,36 +1,44 @@
 from PyQt5 import QtCore, QtGui, QtWidgets;
-from PyQt5.QtWidgets import QFileDialog;
 import sys;
 import os;
-sys.path.insert(1, "/home/ubuntu/odrive-x")
+import socket;
+import json;
+sys.path.insert(1,os.path.join(os.path.expanduser('~'),'odrive-x'));
+from gui.Gui import Gui;
 from gui.UnmountGui import UnmountGui;
+from Odrivex import Odrivex;
 class Unmount():
-    def centering(self,arg_window):
-        window=arg_window.frameGeometry();
-        center=QtWidgets.QDesktopWidget().availableGeometry().center();
-        window.moveCenter(center);
-        arg_window.move(window.topLeft());
-    def ui(self):
-        self.obj_QMainWindow__ui=QtWidgets.QMainWindow();
-        self.centering(self.obj_QMainWindow__ui);
+    def setupUi(self):
         self.obj_UnmountGui=UnmountGui();
-        self.obj_UnmountGui.setupUi(self.obj_QMainWindow__ui);
-        self.obj_QMainWindow__ui.show();
-        self.obj_UnmountGui.btn_local.clicked.connect(self.local);
-        self.obj_UnmountGui.btn_unmount.clicked.connect(self.unmount);
-    def local(self):
-        self.local_dir=QFileDialog.getExistingDirectory(None, 'Select a directory',"/home");
-        self.obj_UnmountGui.local_path.setText(self.local_dir);
+        self.obj_QMainWindow__setupUi=QtWidgets.QMainWindow();
+        self.obj_UnmountGui.setupUi(self.obj_QMainWindow__setupUi);
+        Gui.centering(self.obj_QMainWindow__setupUi);
+        self.getPath();
+        self.obj_QMainWindow__setupUi.show();
+        self.obj_UnmountGui.pushButton.clicked.connect(self.unmount);
+    def getPath(self):
+        with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'/'+'mount','r') as mount_f:
+            dirs=json.loads(mount_f.read());
+        self.local_dir=dirs['localPath'];
+        self.obj_UnmountGui.comboBox.addItem(self.local_dir);
     def unmount(self):
-        os.system("sudo odrive unmount "+self.local_dir+" 2>&1 |tee /home/ubuntu/.odrive-x/unmount.txt");
-        with open("/home/ubuntu/.odrive-x/unmount.txt") as unmount_f:
-            info=QtWidgets.QMessageBox();
-            info.setWindowTitle("odrive-x");
-            alert=unmount_f.readline().rstrip("\n");
-            info.setText(alert);
-            info.exec_();
+        socket_odriveagent=Odrivex.tether();
+        socket_odriveagent.sendall((json.dumps({'command':'unmount','parameters':{'localPath':self.local_dir}})+'\n').encode('utf-8'));
+        response_odriveagent=Odrivex.receive(socket_odriveagent);
+        socket_odriveagent.close();
+        if (response_odriveagent['messageType']=='Status'):
+            success=QtWidgets.QMessageBox();
+            success.setWindowTitle("Alert");
+            success.setText(response_odriveagent['message']);
+            success.exec_();
+            self.obj_QMainWindow__setupUi.close();
+        if (response_odriveagent['messageType']=='Error'):
+            error=QtWidgets.QMessageBox();
+            error.setWindowTitle("Error");
+            error.setText(response_odriveagent['message']);
+            error.exec_();
 if __name__ == "__main__":
     obj_QApplication=QtWidgets.QApplication(sys.argv)
     obj_Mount=Unmount();
-    obj_Mount.ui();
+    obj_Mount.setupUi();
     sys.exit(obj_QApplication.exec_())
