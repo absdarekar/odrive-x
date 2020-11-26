@@ -84,7 +84,6 @@ class MountGui(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "odrive-x"))
         self.groupBox.setTitle(_translate("MainWindow", "Mount"))
         self.label.setText(_translate("MainWindow", "Select local path"))
-        self.remote_path.setText(_translate("MainWindow", "/"))
         self.label_2.setText(_translate("MainWindow", "Select remote path"))
 
 

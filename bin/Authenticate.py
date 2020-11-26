@@ -3,10 +3,11 @@ import sys;
 import os;
 import socket;
 import json;
-sys.path.insert(1,os.path.join(os.path.expanduser('~'),'odrive-x'));
+ODRIVEX_FILES_PATH=os.path.join(os.path.expanduser('~'),'odrive-x');
+sys.path.insert(1,ODRIVEX_FILES_PATH);
+from bin.Odrivex import Odrivex, ODRIVEX_APPDATA_PATH;
 from gui.Gui import Gui;
 from gui.AuthenticateGui import AuthenticateGui;
-from Odrivex import Odrivex;
 class Authenticate():
     def setupUi(self):
         self.obj_QMainWindow__setupUi=QtWidgets.QMainWindow();
@@ -17,23 +18,23 @@ class Authenticate():
         self.obj_AuthenticateGui.btn_authenticate.clicked.connect(self.authenticate);
     def authenticate(self):
         authkey=self.obj_AuthenticateGui.authkey.text();
-        socket_odriveagent=Odrivex.tether();
-        socket_odriveagent.sendall((json.dumps({'command':'authenticate','parameters':{'authKey':authkey}})+'\n').encode('utf-8'));
-        response_odriveagent=Odrivex.receive(socket_odriveagent);
-        socket_odriveagent.close();
-        if (response_odriveagent['messageType']=='Status'):
+        socketOdriveagent=Odrivex.tether();
+        socketOdriveagent.sendall((json.dumps({'command':'authenticate','parameters':{'authKey':authkey}})+'\n').encode('utf-8'));
+        responseOdriveagent=Odrivex.receive(socketOdriveagent);
+        socketOdriveagent.close();
+        if (responseOdriveagent['messageType']=='Status'):
             success=QtWidgets.QMessageBox();
             success.setWindowTitle("Welcome");
-            name=str(response_odriveagent['message']).replace("Hello","");
+            name=str(responseOdriveagent['message']).replace("Hello","");
             success.setText(name);
             success.exec_();
             self.obj_AuthenticateGui.btn_authenticate.setEnabled(False);
             self.obj_AuthenticateGui.authkey.setEnabled(False);
-            socket_odriveagent=Odrivex.tether();
-            socket_odriveagent.sendall((json.dumps({'command':'status','parameters':{}})+'\n').encode('utf-8'));
-            response_odriveagent=Odrivex.receive(socket_odriveagent);
-            socket_odriveagent.close();
-            message=response_odriveagent['message'];
+            socketOdriveagent=Odrivex.tether();
+            socketOdriveagent.sendall((json.dumps({'command':'status','parameters':{}})+'\n').encode('utf-8'));
+            responseOdriveagent=Odrivex.receive(socketOdriveagent);
+            socketOdriveagent.close();
+            message=responseOdriveagent['message'];
             email=message['authorizedEmail'];
             accountType=message['authorizedAccountSourceType']
             self.obj_AuthenticateGui.name.setText("Name: "+name);
@@ -42,17 +43,20 @@ class Authenticate():
             self.obj_AuthenticateGui.email.adjustSize();
             self.obj_AuthenticateGui.ac.setText("Account Type: "+accountType);
             self.obj_AuthenticateGui.ac.adjustSize();
-            user_info={"name":name,"email":email,"accountType":accountType};
-            os.makedirs(os.path.join(os.path.expanduser('~'),'.odrive-x'), exist_ok=True);
-            with open(os.path.join(os.path.expanduser('~'),'.odrive-x')+'/'+'user_info','w') as user_info_f:
-                json.dump(user_info,user_info_f,indent=None);
-        if (response_odriveagent['messageType']=='Error'):
-            error=QtWidgets.QMessageBox();
-            error.setWindowTitle("Error");
-            error.setText(response_odriveagent['message']);
-            error.exec_();
+            userInfo={
+                        "name":
+                                name,
+                        "email":
+                                email,
+                        "accountType":
+                                    accountType
+                    };
+            with open(ODRIVEX_APPDATA_PATH+'/user_info','w') as user_info_f:
+                json.dump(userInfo,user_info_f,indent=None);
+        if (responseOdriveagent['messageType']=='Error'):
+            Odrivex.showError(responseOdriveagent['message']);
 if __name__=="__main__":
-    obj_QApplication=QtWidgets.QApplication(sys.argv)
+    obj_QApplication=QtWidgets.QApplication(sys.argv);
     obj_Authenticate=Authenticate();
     obj_Authenticate.setupUi();
-    sys.exit(obj_QApplication.exec_())
+    sys.exit(obj_QApplication.exec_());
