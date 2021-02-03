@@ -2,7 +2,7 @@
 
 # Shell script to install odrive Sync Agent and odrive-x
 
-# Enables Universe repository, updates and upgrades the system
+# Enables Universe repository and updates the system
 
 echo "Get update"
 sudo add-apt-repository universe && sudo apt-get update
@@ -43,8 +43,8 @@ cd $HOME
 echo "Get odrive-x"
 wget https://github.com/absdarekar/odrive-x/archive/master.zip
 echo "Unpacking odrive-x"
-unzip master.zip
-mv odrive-x-master/ odrive-x/
+unzip master.zip -d $HOME
+mv $HOME/odrive-x-master/ $HOME/odrive-x/
 rm master.zip
 
 # make .desktop file of odrive-x
