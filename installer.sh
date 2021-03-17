@@ -2,9 +2,9 @@
 
 # Shell script to install odrive Sync Agent and odrive-x
 
-# Enables Universe repository and updates the system
+# Enables Universe repository and download package information from all configured sources
 
-echo "Get update"
+echo "Update package information"
 sudo add-apt-repository universe && sudo apt-get update
 
 # installs pip3
